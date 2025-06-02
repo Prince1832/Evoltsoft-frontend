@@ -135,13 +135,13 @@ export default {
       return this.chargers.filter(c => {
         const matchesName = c.name.toLowerCase().includes(this.searchQuery.toLowerCase());
         const matchesStatus = !this.filters.status || c.status === this.filters.status;
-        const matchesPower = !this.filters.power || c.powerOutput === this.filters.power;
+        const matchesPower = !this.filters.power || c.power === this.filters.power;
         const matchesConnector = !this.filters.connectorType || c.connectorType === this.filters.connectorType;
         return matchesName && matchesStatus && matchesPower && matchesConnector;
       });
     },
     uniquePowerOutputs() {
-      return [...new Set(this.chargers.map(c => c.powerOutput))].sort((a, b) => a - b);
+      return [...new Set(this.chargers.map(c => c.power))].sort((a, b) => a - b);
     },
     uniqueConnectorTypes() {
       return [...new Set(this.chargers.map(c => c.connectorType))];
