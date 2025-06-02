@@ -20,10 +20,15 @@
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-400 outline-none" />
         </div>
         <button type="submit"
-          class="w-full bg-green-600 hover:bg-green-700 transition text-white font-semibold py-2 rounded-lg cursor-pointer">
-          Register
+          class="w-full bg-green-600 hover:bg-green-700 transition text-white font-semibold py-2 rounded-lg cursor-pointer flex justify-center items-center"
+          :disabled="loading">
+          <span v-if="!loading">Register</span>
+          <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
         </button>
-
         <p v-if="error" class="text-red-500 text-center text-sm mt-2">{{ error }}</p>
       </form>
 
@@ -44,21 +49,34 @@ export default {
       name: '',
       email: '',
       password: '',
-      error: ''
+      error: '',
+      loading: false
     }
   },
   methods: {
     async register() {
+      this.error = '';
+      this.loading = true;
       try {
-        const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, {
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, {
           name: this.name,
           email: this.email,
           password: this.password
         })
-        localStorage.setItem('token', res.data.token)
+
+        const loginRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
+          email: this.email,
+          password: this.password
+        })
+
+        localStorage.setItem('token', loginRes.data.token)
+
         this.$router.push('/chargers')
+
       } catch (e) {
-        this.error = 'Registration failed. Try another email.'
+        this.error = 'Registration or login failed'
+      } finally {
+        this.loading = false;
       }
     }
   }
